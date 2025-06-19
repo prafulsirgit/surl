@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Free URL Shortner</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+    <!-- Apple Touch Icon for iOS devices -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/static/apple-touch-icon.png"
+    />
+    <!-- Favicon for modern browsers -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/static/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/static/favicon-16x16.png"
+    />
+    <!-- Manifest for PWAs -->
+    <link rel="manifest" href="/static/site.webmanifest" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Free URL Shortner</h1>
+        <h3>The generated URL are expired after 3 days.</h3>
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+      </header>
+      <main>
+        {% with messages = get_flashed_messages(with_categories=true) %} {% for
+        category, message in messages %}
+        <p class="flash-message">{{ message }}</p>
+        {% endfor %} {% endwith %}
+        <form method="POST" onsubmit="return validateForm()">
+          <div class="input-group">
+            <input
+              type="url"
+              id="original_url"
+              name="original_url"
+              placeholder="Paste your long URL here"
+              required
+            />
+            <span class="input-icon">🔗</span>
+          </div>
+          <div class="input-group">
+            <input
+              type="text"
+              id="custom_alias"
+              name="custom_alias"
+              placeholder="Custom alias (optional)"
+            />
+            <span class="input-icon">✍️</span>
+          </div>
+          <button type="submit" class="shorten-btn">Shorten URL</button>
+        </form>
+        {% if short_url %}
+        <div class="result">
+          <p>Your Short URL:</p>
+          <a href="{{ short_url }}" target="_blank">{{ short_url }}</a>
+          <button onclick="copyToClipboard('{{ short_url }}')" class="copy-btn">
+            Copy
+          </button>
+        </div>
+        {% endif %}
+      </main>
+    </div>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: background 0.3s ease;
+      }
+
+      body.dark {
+        background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+        color: #ffffff;
+      }
+
+      .container {
+        max-width: 500px;
+        width: 90%;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      body.dark .container {
+        background: rgba(40, 40, 40, 0.95);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+        color: #1e3a8a;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      body.dark h1 {
+        color: #60a5fa;
+      }
+
+      .theme-toggle {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .theme-toggle:hover {
+        transform: scale(1.2);
+      }
+
+      .flash-message {
+        background: #fee2e2;
+        color: #dc2626;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        text-align: center;
+        animation: slideIn 0.3s ease;
+      }
+
+      body.dark .flash-message {
+        background: #7f1d1d;
+        color: #fca5a5;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      body.dark input {
+        background: #374151;
+        color: #ffffff;
+        border-color: #4b5563;
+      }
+
+      .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+      }
+
+      .shorten-btn {
+        background: #1e3a8a;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+      }
+
+      .shorten-btn:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+      }
+
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f3f4f6;
+        border-radius: 8px;
+        text-align: center;
+        animation: fadeIn 0.5s ease;
+      }
+
+      body.dark .result {
+        background: #374151;
+      }
+
+      .result p {
+        font-size: 1rem;
+        color: #4b5563;
+        margin-bottom: 10px;
+      }
+
+      body.dark .result p {
+        color: #d1d5db;
+      }
+
+      .result a {
+        color: #1e40af;
+        text-decoration: none;
+        font-weight: bold;
+        word-break: break-all;
+      }
+
+      body.dark .result a {
+        color: #60a5fa;
+      }
+
+      .result a:hover {
+        text-decoration: underline;
+      }
+
+      .copy-btn {
+        background: #10b981;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .copy-btn:hover {
+        background: #059669;
+      }
+
+      .copy-btn.copied {
+        background: #6b7280;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(-10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 400px) {
+        h1 {
+          font-size: 1.5rem;
+        }
+        .container {
+          padding: 15px;
+        }
+      }
+    </style>
+
+    <script>
+      function toggleTheme() {
+        document.body.classList.toggle("dark");
+        const toggleBtn = document.querySelector(".theme-toggle");
+        toggleBtn.textContent = document.body.classList.contains("dark")
+          ? "☀️"
+          : "🌙";
+        localStorage.setItem(
+          "theme",
+          document.body.classList.contains("dark") ? "dark" : "light"
+        );
+      }
+
+      // Load saved theme
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+        document.querySelector(".theme-toggle").textContent = "☀️";
+      }
+
+      function validateForm() {
+        const urlInput = document.getElementById("original_url").value;
+        const aliasInput = document.getElementById("custom_alias").value;
+        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
+        const aliasPattern = /^[a-zA-Z0-9_-]*$/;
+
+        if (!urlPattern.test(urlInput)) {
+          alert("Please enter a valid URL (e.g., https://example.com)");
+          return false;
+        }
+
+        if (aliasInput && !aliasPattern.test(aliasInput)) {
+          alert(
+            "Custom alias can only contain letters, numbers, hyphens, or underscores"
+          );
+          return false;
+        }
+
+        return true;
+      }
+
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          const copyBtn = document.querySelector(".copy-btn");
+          copyBtn.textContent = "Copied!";
+          copyBtn.classList.add("copied");
+          setTimeout(() => {
+            copyBtn.textContent = "Copy";
+            copyBtn.classList.remove("copied");
+          }, 2000);
+        });
+      }
+    </script>
+  </body>
+</html>
