@@ -2,7 +2,7 @@
 
 ## Tired of long, clunky URLs? Wish you could brand your links or make them easier to remember?
 
-**URL Genie** is your magical solution\! This simple yet powerful URL shortener allows you to transform lengthy web addresses into concise, shareable links. Whether it's for social media, marketing campaigns, or just tidying up your browser, URL Genie makes your links work smarter, not harder.
+**SURL** is your magical solution\! This simple yet powerful URL shortener allows you to transform lengthy web addresses into concise, shareable links. Whether it's for social media, marketing campaigns, or just tidying up your browser, URL Genie makes your links work smarter, not harder.
 
 -----
 
@@ -17,12 +17,8 @@
 
 ## For the Everyday User
 
-### How to Use URL Genie
-
-    1.  **Visit the homepage:** Simply navigate to the URL Genie web interface.
-    2.  **Paste your long URL:** Enter the full web address you want to shorten into the input field.
-    3.  **(Optional) Add a Custom Alias:** Want a personalized link? Type in your desired short code (e.g., `my-cool-link`). If left blank, a random one will be generated for you.
-    4.  **Click "Shorten"\!** Your new, compact URL will be instantly generated and displayed. Copy it and share away\!
+### How to Use SURL
+https://github.com/user-attachments/assets/b8ca7884-fcb9-46d8-9fff-5b4da882fd54
 
 -----
 
